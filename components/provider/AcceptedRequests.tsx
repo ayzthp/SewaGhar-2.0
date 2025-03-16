@@ -25,6 +25,7 @@ const AcceptedRequests: React.FC<AcceptedRequestsProps> = ({
 }) => {
   const [expandedRequest, setExpandedRequest] = useState<string | null>(null)
   const [activeChatRequest, setActiveChatRequest] = useState<string | null>(null)
+  const [unreadCounts, setUnreadCounts] = useState<{ [key: string]: number }>({})
 
   const toggleExpand = (requestId: string) => {
     setExpandedRequest(expandedRequest === requestId ? null : requestId)
@@ -84,7 +85,11 @@ const AcceptedRequests: React.FC<AcceptedRequestsProps> = ({
                 >
                   <MessageCircle className="mr-2 h-4 w-4" />
                   Chat with Customer
-
+                  {unreadCounts[request.id] > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                      {unreadCounts[request.id]}
+                    </span>
+                  )}
                 </button>
                 <button
                   onClick={() => handleNotInterested(request.id)}
@@ -143,6 +148,12 @@ const AcceptedRequests: React.FC<AcceptedRequestsProps> = ({
             <Chat
               requestId={activeChatRequest}
               otherUserId={requests.find((r) => r.id === activeChatRequest)?.customer_id || ""}
+              onUnreadCountChange={(count) => {
+                setUnreadCounts(prev => ({
+                  ...prev,
+                  [activeChatRequest]: count
+                }))
+              }}
             />
           </div>
         </div>

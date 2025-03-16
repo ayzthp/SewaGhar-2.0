@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useState, useEffect, useRef } from "react"
-import { ref, push, onValue, query, orderByChild, set } from "firebase/database"
+import { ref, push, onValue, query, orderByChild, set, update } from "firebase/database"
 import { db, auth } from "@/lib/firebase"
 import type { ChatMessage } from "@/lib/firebase"
 // Removed unused imports from firebase/firestore
@@ -11,9 +11,10 @@ import type { ChatMessage } from "@/lib/firebase"
 interface ChatProps {
   requestId: string
   otherUserId: string
+  onUnreadCountChange?: (count: number) => void
 }
 
-const Chat: React.FC<ChatProps> = ({ requestId, otherUserId }) => {
+const Chat: React.FC<ChatProps> = ({ requestId, otherUserId, onUnreadCountChange }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [newMessage, setNewMessage] = useState("")
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -38,10 +39,21 @@ const Chat: React.FC<ChatProps> = ({ requestId, otherUserId }) => {
         const messagesList = Object.values(messagesData) as ChatMessage[]
         setMessages(messagesList)
 
+        // Count unread messages and update badge
+        const unreadCount = messagesList.filter(
+          (msg) => msg.sender_id === otherUserId && !msg.read
+        ).length
+        if (onUnreadCountChange) {
+          onUnreadCountChange(unreadCount)
+        }
+
         // Show notification for new messages
         const lastMessage = messagesList[messagesList.length - 1]
         if (lastMessage && lastMessage.sender_id === otherUserId && !lastMessage.read) {
           showNotification(lastMessage)
+          // Mark message as read when viewed
+          const messageRef = ref(db, `chats/${requestId}/${lastMessage.id}`)
+          update(messageRef, { read: true })
         }
       }
     })

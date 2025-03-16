@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import { useEffect, useState } from "react";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { ProviderLocation, subscribeToProviderLocation, getNearbyProviders } from "@/lib/location";
@@ -22,52 +22,7 @@ const fixLeafletIcon = () => {
   }
 };
 
-// Component to animate marker movement
-const AnimatedMarker = ({ provider }: { provider: ProviderLocation & { profile?: ProviderProfile } }) => {
-  const map = useMap();
-  const markerRef = useRef<L.Marker | null>(null);
-  const prevPositionRef = useRef<[number, number] | null>(null);
-  
-  useEffect(() => {
-    const position: [number, number] = [provider.latitude, provider.longitude];
-    
-    if (!markerRef.current) {
-      markerRef.current = L.marker(position).addTo(map);
-    } else if (prevPositionRef.current) {
-      // Animate marker movement
-      const prevPos = prevPositionRef.current;
-      const newPos = position;
-      
-      const frames = 20; // Number of frames for animation
-      let i = 0;
-      
-      const animate = () => {
-        if (i <= frames && markerRef.current) {
-          const lat = prevPos[0] + (newPos[0] - prevPos[0]) * (i / frames);
-          const lng = prevPos[1] + (newPos[1] - prevPos[1]) * (i / frames);
-          markerRef.current.setLatLng([lat, lng]);
-          i++;
-          requestAnimationFrame(animate);
-        }
-      };
-      
-      animate();
-    } else {
-      markerRef.current.setLatLng(position);
-    }
-    
-    prevPositionRef.current = position;
-    
-    return () => {
-      if (markerRef.current) {
-        map.removeLayer(markerRef.current);
-        markerRef.current = null;
-      }
-    };
-  }, [map, provider.latitude, provider.longitude]);
-  
-  return null;
-};
+
 
 interface ProviderMapProps {
   customerId?: string; // Kept for future use
@@ -88,7 +43,7 @@ const ProviderMap: React.FC<ProviderMapProps> = ({
 }) => {
   const [providers, setProviders] = useState<Array<ProviderLocation & { profile?: ProviderProfile }>>([]);
   // const [selectedProvider, setSelectedProvider] = useState<string | null>(null); // Commented out as currently unused
-  const [mapCenter, setMapCenter] = useState<[number, number]>([27.7172, 85.3240]); // Default to Kathmandu
+  const [mapCenter] = useState<[number, number]>([27.7172, 85.3240]); // Default to Kathmandu
   const [isMapInitialized, setIsMapInitialized] = useState(false);
 
   // Fix Leaflet icon issue
@@ -110,7 +65,6 @@ const ProviderMap: React.FC<ProviderMapProps> = ({
         unsubscribe = subscribeToProviderLocation(providerId, (location) => {
           if (location) {
             setProviders([{ ...location, profile: providerProfile || undefined }]);
-            setMapCenter([location.latitude, location.longitude]);
           }
         });
       } else if (showAllProviders && customerLocation) {
@@ -130,7 +84,6 @@ const ProviderMap: React.FC<ProviderMapProps> = ({
         );
         
         setProviders(providersWithProfiles);
-        setMapCenter([customerLocation.latitude, customerLocation.longitude]);
       }
     };
     
@@ -140,6 +93,7 @@ const ProviderMap: React.FC<ProviderMapProps> = ({
       if (unsubscribe) unsubscribe();
     };
   }, [providerId, customerLocation, showAllProviders, isMapInitialized]);
+
 
   const handleProviderClick = (providerId: string) => {
     // setSelectedProvider(providerId); // Commented out as currently unused
@@ -168,9 +122,27 @@ const ProviderMap: React.FC<ProviderMapProps> = ({
           </Marker>
         )}
         
-        {/* Provider markers with animation */}
+        {/* Provider markers */}
         {providers.map((provider) => (
-          <AnimatedMarker key={provider.providerId} provider={provider} />
+          <Marker 
+            key={provider.providerId}
+            position={[provider.latitude, provider.longitude]}
+            eventHandlers={{
+              click: () => handleProviderClick(provider.providerId),
+            }}
+          >
+            <Popup>
+              <div className="p-2">
+                <h3 className="font-bold">{provider.profile?.name || 'Service Provider'}</h3>
+                {provider.profile?.skills && (
+                  <p className="text-sm">Skills: {provider.profile.skills}</p>
+                )}
+                <p className="text-xs mt-1">
+                  Status: <span className="font-semibold capitalize">{provider.status}</span>
+                </p>
+              </div>
+            </Popup>
+          </Marker>
         ))}
         
         {/* Static markers with popups for interaction */}

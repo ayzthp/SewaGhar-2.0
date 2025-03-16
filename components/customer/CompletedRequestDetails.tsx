@@ -2,6 +2,9 @@ import type React from "react"
 import type { ServiceRequest, ProviderProfile } from "@/lib/firebase"
 import { MapPin, DollarSign, Clock, User } from "lucide-react"
 import Image from "next/image"
+import Rating from "../Rating"
+import ProviderMap from "../map/ProviderMap"
+import RouteDisplay from "../map/RouteDisplay"
 
 interface CompletedRequestDetailsProps {
   request: ServiceRequest
@@ -9,6 +12,9 @@ interface CompletedRequestDetailsProps {
 }
 
 const CompletedRequestDetails: React.FC<CompletedRequestDetailsProps> = ({ request, providerProfile }) => {
+  const customerLocation = request.latitude && request.longitude
+    ? { latitude: request.latitude, longitude: request.longitude }
+    : undefined;
   return (
     <div className="bg-white shadow overflow-hidden sm:rounded-lg">
       <div className="px-4 py-5 sm:px-6">
@@ -59,16 +65,29 @@ const CompletedRequestDetails: React.FC<CompletedRequestDetailsProps> = ({ reque
           />
         </div>
       )}
-      {request.latitude && request.longitude && (
+      {customerLocation && request.provider_id && (
         <div className="px-4 py-5 sm:px-6">
-          <a
-            href={`https://www.google.com/maps?q=${request.latitude},${request.longitude}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-600 hover:text-blue-800"
-          >
-            View on Google Maps
-          </a>
+          <div className="h-[400px] w-full rounded-lg overflow-hidden">
+            <ProviderMap
+              providerId={request.provider_id}
+              customerLocation={customerLocation}
+            >
+              <RouteDisplay
+                providerLocation={customerLocation}
+                customerLocation={customerLocation}
+              />
+            </ProviderMap>
+          </div>
+        </div>
+      )}
+      
+      {!request.reviewed && request.provider_id && (
+        <div className="px-4 py-5 sm:px-6">
+          <Rating
+            targetUserId={request.provider_id}
+            requestId={request.id}
+            userType="customer"
+          />
         </div>
       )}
     </div>

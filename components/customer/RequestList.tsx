@@ -23,6 +23,7 @@ interface RequestListProps {
 const RequestList: React.FC<RequestListProps> = ({ title, requests, providerProfiles }) => {
   const [zoomedImage, setZoomedImage] = useState<string | null>(null)
   const [activeChatRequest, setActiveChatRequest] = useState<string | null>(null)
+  const [unreadCounts, setUnreadCounts] = useState<{ [key: string]: number }>({})
   const [selectedProviderProfile, setSelectedProviderProfile] = useState<ProviderProfile | null>(null)
   const router = useRouter()
 
@@ -90,6 +91,11 @@ const RequestList: React.FC<RequestListProps> = ({ title, requests, providerProf
           >
             <MessageCircle className="mr-2 h-4 w-4" />
             Chat with Provider
+            {unreadCounts[request.id] > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                {unreadCounts[request.id]}
+              </span>
+            )}
           </button>
           <button
             onClick={() => handleMarkAsCompleted(request.id)}
@@ -147,6 +153,12 @@ const RequestList: React.FC<RequestListProps> = ({ title, requests, providerProf
             <Chat
               requestId={activeChatRequest}
               otherUserId={requests.find((r) => r.id === activeChatRequest)?.provider_id || ""}
+              onUnreadCountChange={(count) => {
+                setUnreadCounts(prev => ({
+                  ...prev,
+                  [activeChatRequest]: count
+                }))
+              }}
             />
           </div>
         </div>

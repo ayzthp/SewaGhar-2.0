@@ -1,8 +1,18 @@
 const nextConfig = {
   reactStrictMode: true,
+  output: 'export',
   images: {
-    domains: ['i.ibb.co'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'i.ibb.co',
+        port: '',
+        pathname: '/**',
+      },
+    ],
+    unoptimized: true
   },
+  trailingSlash: true,
   env: {
     NEXT_PUBLIC_FIREBASE_API_KEY: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
     NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,

@@ -1,12 +1,17 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import dynamic from "next/dynamic"
 import { ref, onValue, query, orderByChild, equalTo } from "firebase/database"
 import { db, auth } from "@/lib/firebase"
 import { useRouter } from "next/navigation"
 import type { ServiceRequest, ProviderProfile } from "@/lib/firebase"
 import Navbar from "@/components/Navbar"
-import CompletedRequestDetails from "@/components/customer/CompletedRequestDetails"
+
+const CompletedRequestDetails = dynamic(
+  () => import("@/components/customer/CompletedRequestDetails"),
+  { ssr: false }
+)
 
 export default function CompletedRequestsPage() {
   const [completedRequests, setCompletedRequests] = useState<ServiceRequest[]>([])

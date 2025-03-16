@@ -35,21 +35,30 @@ const LocationUpdater: React.FC<LocationUpdaterProps> = ({
 
     let watchId: number;
     let intervalId: NodeJS.Timeout;
+    let isComponentMounted = true;
 
     const startTracking = () => {
+      if (!isComponentMounted) return;
       setIsTracking(true);
 
       // Watch position for changes
       watchId = navigator.geolocation.watchPosition(
         (position) => {
+          if (!isComponentMounted) return;
           const { latitude, longitude } = position.coords;
           setCurrentLocation({ latitude, longitude });
           
           if (onLocationUpdate) {
             onLocationUpdate(latitude, longitude);
           }
+
+          // Update Firebase immediately when we get a new position
+          updateProviderLocation(latitude, longitude, status).catch((err) => {
+            console.error("Error updating location in Firebase:", err);
+          });
         },
         (err) => {
+          if (!isComponentMounted) return;
           setError(`Error getting location: ${err.message}`);
           setIsTracking(false);
         },
@@ -60,15 +69,17 @@ const LocationUpdater: React.FC<LocationUpdaterProps> = ({
         }
       );
 
-      // Set up interval to update location in Firebase
+      // Set up interval to update location in Firebase periodically
       intervalId = setInterval(async () => {
-        if (currentLocation) {
+        if (!isComponentMounted) return;
+        const currentPos = await new Promise<GeolocationPosition>((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject);
+        }).catch(() => null);
+
+        if (currentPos) {
+          const { latitude, longitude } = currentPos.coords;
           try {
-            await updateProviderLocation(
-              currentLocation.latitude,
-              currentLocation.longitude,
-              status
-            );
+            await updateProviderLocation(latitude, longitude, status);
           } catch (err) {
             console.error("Error updating location in Firebase:", err);
           }
@@ -80,11 +91,12 @@ const LocationUpdater: React.FC<LocationUpdaterProps> = ({
 
     // Clean up on unmount
     return () => {
+      isComponentMounted = false;
       if (watchId) navigator.geolocation.clearWatch(watchId);
       if (intervalId) clearInterval(intervalId);
       setIsTracking(false);
     };
-  }, [status, updateInterval, onLocationUpdate, currentLocation]);
+  }, [status, updateInterval, onLocationUpdate]);
 
   return (
     <div className="p-4 bg-white rounded-lg shadow-md">
