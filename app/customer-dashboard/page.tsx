@@ -8,6 +8,7 @@ import type { ServiceRequest, ProviderProfile } from "@/lib/firebase"
 import Navbar from "@/components/Navbar"
 import ProblemSubmissionForm from "@/components/customer/ProblemSubmissionForm"
 import RequestList from "@/components/customer/RequestList"
+// Removed unused import: import ProviderMap from "@/components/map/ProviderMap"
 
 export default function CustomerDashboard() {
   const [requests, setRequests] = useState<ServiceRequest[]>([])

@@ -8,6 +8,7 @@ import type { ServiceRequest, CustomerProfile } from "@/lib/firebase"
 import Navbar from "@/components/Navbar"
 import AvailableRequests from "@/components/provider/AvailableRequests"
 import AcceptedRequests from "@/components/provider/AcceptedRequests"
+import LocationUpdater from "@/components/map/LocationUpdater"
 
 export default function ProviderDashboard() {
   const [availableRequests, setAvailableRequests] = useState<ServiceRequest[]>([])
@@ -104,20 +105,25 @@ export default function ProviderDashboard() {
       <Navbar userType="provider" />
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-6">Provider Dashboard</h1>
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <AvailableRequests
-            requests={availableRequests.filter(
-              (request) => !notInterestedRequests[request.id] && !blockedRequests[request.id],
-            )}
-            customerProfiles={customerProfiles}
-            onNotInterestedUpdate={handleNotInterestedUpdate}
-          />
-          <AcceptedRequests
-            requests={acceptedRequests}
-            customerProfiles={customerProfiles}
-            notInterestedRequests={notInterestedRequests}
-            onNotInterestedUpdate={handleNotInterestedUpdate}
-          />
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          <div className="lg:col-span-2 grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <AvailableRequests
+              requests={availableRequests.filter(
+                (request) => !notInterestedRequests[request.id] && !blockedRequests[request.id],
+              )}
+              customerProfiles={customerProfiles}
+              onNotInterestedUpdate={handleNotInterestedUpdate}
+            />
+            <AcceptedRequests
+              requests={acceptedRequests}
+              customerProfiles={customerProfiles}
+              notInterestedRequests={notInterestedRequests}
+              onNotInterestedUpdate={handleNotInterestedUpdate}
+            />
+          </div>
+          <div className="space-y-6">
+            <LocationUpdater status="available" updateInterval={5000} />
+          </div>
         </div>
       </div>
     </div>

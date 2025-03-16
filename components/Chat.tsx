@@ -18,18 +18,19 @@ const Chat: React.FC<ChatProps> = ({ requestId, otherUserId }) => {
   const [newMessage, setNewMessage] = useState("")
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
-  const showNotification = (message: ChatMessage) => {
-    if ("Notification" in window && Notification.permission === "granted") {
-      const senderName = message.sender_id === otherUserId ? "Provider" : "Customer"
-      new Notification(`${senderName} texted you`, {
-        body: message.content,
-      })
-    }
-  }
-
   useEffect(() => {
     const chatRef = ref(db, `chats/${requestId}`)
     const chatQuery = query(chatRef, orderByChild("timestamp"))
+
+    // Define showNotification inside useEffect to avoid dependency issues
+    const showNotification = (message: ChatMessage) => {
+      if ("Notification" in window && Notification.permission === "granted") {
+        const senderName = message.sender_id === otherUserId ? "Provider" : "Customer"
+        new Notification(`${senderName} texted you`, {
+          body: message.content,
+        })
+      }
+    }
 
     const unsubscribe = onValue(chatQuery, (snapshot) => {
       const messagesData = snapshot.val()
@@ -46,7 +47,7 @@ const Chat: React.FC<ChatProps> = ({ requestId, otherUserId }) => {
     })
 
     return () => unsubscribe()
-  }, [requestId, otherUserId, showNotification])
+  }, [requestId, otherUserId])
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })

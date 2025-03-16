@@ -4,6 +4,7 @@ import type React from "react"
 
 import { useState } from "react"
 import type { ServiceRequest, ProviderProfile } from "@/lib/firebase"
+import { useRouter } from "next/navigation"
 import ImageZoomModal from "@/components/ImageZoomModal"
 import Chat from "@/components/Chat"
 import { DollarSign, MapPin, Clock, MessageCircle } from "lucide-react"
@@ -23,6 +24,7 @@ const RequestList: React.FC<RequestListProps> = ({ title, requests, providerProf
   const [zoomedImage, setZoomedImage] = useState<string | null>(null)
   const [activeChatRequest, setActiveChatRequest] = useState<string | null>(null)
   const [selectedProviderProfile, setSelectedProviderProfile] = useState<ProviderProfile | null>(null)
+  const router = useRouter()
 
 
 
@@ -100,6 +102,13 @@ const RequestList: React.FC<RequestListProps> = ({ title, requests, providerProf
             className="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
           >
             View Provider Profile
+          </button>
+          <button
+            onClick={() => router.push(`/customer-dashboard/track?providerId=${request.provider_id}&requestId=${request.id}`)}
+            className="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          >
+            <MapPin className="mr-2 h-4 w-4" />
+            Track Provider
           </button>
         </div>
       )}
