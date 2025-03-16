@@ -76,9 +76,9 @@ export default function ProblemSubmissionForm() {
   }
 
   return (
-    <div className="bg-white shadow-lg rounded-lg p-6">
-      <h2 className="text-2xl font-bold mb-4">Submit a New Request</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="bg-white shadow-lg rounded-lg p-4 sm:p-6">
+      <h2 className="text-xl sm:text-2xl font-bold mb-4">Submit a New Request</h2>
+      <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
         <div>
           <label htmlFor="title" className="block text-sm font-medium text-gray-700">
             Title
@@ -101,7 +101,7 @@ export default function ProblemSubmissionForm() {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             required
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm sm:text-base px-3 py-2"
             rows={3}
           ></textarea>
         </div>
@@ -164,7 +164,7 @@ export default function ProblemSubmissionForm() {
         <ImageUpload onImageUpload={handleImageUpload} onLocationCapture={handleLocationCapture} />
         <button
           type="submit"
-          className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline transition-colors"
+          className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 sm:py-3 px-4 rounded-full focus:outline-none focus:shadow-outline transition-colors text-sm sm:text-base"
         >
           Submit Request
         </button>

@@ -62,35 +62,35 @@ export default function CompletedRequestsPage() {
   return (
     <div className="min-h-screen bg-gray-100">
       <Navbar userType="customer" />
-      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-6">Completed Requests</h1>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="md:col-span-1 bg-white shadow overflow-hidden sm:rounded-lg">
+      <div className="max-w-7xl mx-auto py-4 px-4 sm:py-6 sm:px-6 lg:px-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6">Completed Requests</h1>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="lg:col-span-1 bg-white shadow overflow-hidden rounded-lg">
             <ul className="divide-y divide-gray-200">
               {completedRequests.map((request) => (
                 <li
                   key={request.id}
-                  className="px-6 py-4 cursor-pointer hover:bg-gray-50"
+                  className="px-4 sm:px-6 py-3 sm:py-4 cursor-pointer hover:bg-gray-50 active:bg-gray-100"
                   onClick={() => setSelectedRequest(request)}
                 >
                   <p className="text-sm font-medium text-indigo-600 truncate">{request.title}</p>
-                  <p className="mt-1 text-sm text-gray-500">{new Date(request.updatedAt).toLocaleDateString()}</p>
-                  <p className="mt-1 text-sm text-gray-500">
+                  <p className="mt-1 text-xs sm:text-sm text-gray-500">{new Date(request.updatedAt).toLocaleDateString()}</p>
+                  <p className="mt-1 text-xs sm:text-sm text-gray-500">
                     Provider: {providerProfiles[request.provider_id!]?.name || "Unknown"}
                   </p>
                 </li>
               ))}
             </ul>
           </div>
-          <div className="md:col-span-2">
+          <div className="lg:col-span-2">
             {selectedRequest ? (
               <CompletedRequestDetails
                 request={selectedRequest}
                 providerProfile={providerProfiles[selectedRequest.provider_id!]}
               />
             ) : (
-              <div className="bg-white shadow overflow-hidden sm:rounded-lg p-6">
-                <p className="text-gray-500">Select a completed request to view details.</p>
+              <div className="bg-white shadow overflow-hidden rounded-lg p-4 sm:p-6">
+                <p className="text-sm text-gray-500">Select a completed request to view details.</p>
               </div>
             )}
           </div>

@@ -103,10 +103,10 @@ export default function ProviderDashboard() {
   return (
     <div className="min-h-screen bg-gray-100">
       <Navbar userType="provider" />
-      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-6">Provider Dashboard</h1>
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          <div className="lg:col-span-2 grid grid-cols-1 gap-6 lg:grid-cols-2">
+      <div className="max-w-7xl mx-auto py-4 px-4 sm:py-6 sm:px-6 lg:px-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6">Provider Dashboard</h1>
+        <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-3">
+          <div className="lg:col-span-2 grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-2">
             <AvailableRequests
               requests={availableRequests.filter(
                 (request) => !notInterestedRequests[request.id] && !blockedRequests[request.id],
@@ -121,7 +121,7 @@ export default function ProviderDashboard() {
               onNotInterestedUpdate={handleNotInterestedUpdate}
             />
           </div>
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             <LocationUpdater status="available" updateInterval={5000} />
           </div>
         </div>
